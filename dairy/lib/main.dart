@@ -1,3 +1,6 @@
+import 'package:dairy/data/diary.dart';
+import 'package:dairy/data/utils.dart';
+import 'package:dairy/write.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -38,10 +41,10 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: getPage(),
       bottomNavigationBar: BottomNavigationBar(
-        items: [
+        items: const [
           BottomNavigationBarItem(icon: Icon(Icons.today), label: "Today"),
           BottomNavigationBarItem(
-              icon: Icon(Icons.calendar_today), label: "Logs"),
+              icon: Icon(Icons.calendar_today), label: "Logs!"),
           BottomNavigationBarItem(
               icon: Icon(Icons.insert_chart), label: "Charts"),
         ],
@@ -52,7 +55,16 @@ class _MyHomePageState extends State<MyHomePage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () async {
+          await Navigator.of(context).push(MaterialPageRoute(
+              builder: (ctx) => DiaryWritePage(
+                  diary: Diary(
+                      date: Utils.getFormatTime(DateTime.now()),
+                      image: "",
+                      memo: "",
+                      status: 0,
+                      title: ""))));
+        },
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),

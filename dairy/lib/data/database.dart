@@ -39,33 +39,26 @@ class DatabaseHelper {
 
   Future _onUpdade(Database db, int version, int newVersion) async {}
 
-  Future<int> insertdiary(Diary diary) async {
+  Future<int> insertDiary(Diary diary) async {
     Database db = await instance.database;
-    if (diary.date == null) {
-      Map<String, dynamic> row = {
-        "title": diary.title,
-        "date": diary.date,
-        "memo": diary.memo,
-        "color": diary.color,
-        "category": diary.category,
-        "done": diary.done
-      };
+
+    List<Diary> diaries = await getDiariesByDate(diary.date);
+    Map<String, dynamic> row = {
+      "title": diary.title,
+      "date": diary.date,
+      "memo": diary.memo,
+      "image": diary.image,
+      "status": diary.status
+    };
+    if (diaries.isEmpty) {
       return await db.insert(diaryTable, row);
     } else {
-      Map<String, dynamic> row = {
-        "title": diary.title,
-        "date": diary.date,
-        "memo": diary.memo,
-        "color": diary.color,
-        "category": diary.category,
-        "done": diary.done
-      };
       return await db
-          .update(diaryTable, row, where: "id = ?", whereArgs: [diary.id]);
+          .update(diaryTable, row, where: "date = ?", whereArgs: [diary.date]);
     }
   }
 
-  Future<List<Diary>> getAlldiary() async {
+  Future<List<Diary>> getAllDiary() async {
     Database db = await instance.database;
     List<Diary> diarys = [];
     List<Map<String, dynamic>> queries = await db.query(diaryTable);
@@ -75,29 +68,26 @@ class DatabaseHelper {
           title: q["title"].toString(),
           memo: q["memo"].toString(),
           date: q["date"],
-          status: q["status"],
           image: q["image"],
-          category: q["category"]));
+          status: q["status"]));
     }
     return diarys;
   }
 
-  Future<List<Diary>> getdiaryByDate(int date) async {
+  Future<List<Diary>> getDiariesByDate(int date) async {
     Database db = await instance.database;
-    List<Diary> diarys = [];
+    List<Diary> diaries = [];
     List<Map<String, dynamic>> queries =
         await db.query(diaryTable, where: "date = ?", whereArgs: [date]);
 
     for (var q in queries) {
-      diarys.add(Diary(
-          id: q["id"],
+      diaries.add(Diary(
           title: q["title"].toString(),
           memo: q["memo"].toString(),
           date: q["date"],
-          color: q["color"],
-          done: q["done"],
-          category: q["category"]));
+          image: q["image"],
+          status: q["status"]));
     }
-    return diarys;
+    return diaries;
   }
 }
